@@ -1,0 +1,6 @@
+# -*- mode: sh; sh-shell: zsh -*-
+
+abort() {
+    print -P "$(visualize_characters "$KEYS" '%B%S' '%s%b')"
+    zle send-break
+}

@@ -1,0 +1,26 @@
+# -*- mode: sh; sh-shell: zsh -*-
+
+smart_exit_status() {
+    if [[ "$1" == 0 ]]; then
+        echo "%F{10}(*'-')b < Exited successfully.%f"
+        return
+    fi
+
+    echo "%F{9}Exited with code $1"
+    echo -n "(*'~')/ < "
+
+    if (( $1 == 1 )); then
+        echo -n 'Something went wrong?'
+    elif (( $1 == 127 )); then
+        echo -n 'Command not found. Check $PWD, $path, permissions etc.'
+    else
+        if (( 128 <= $1 )) && (( $1 < 160 )); then
+            local sig=$(kill -l "$1")
+            local pre='Caught signal SIG'
+            echo -n "$pre$sig."
+        else
+            echo -n '...'
+        fi
+    fi
+    echo '%f'
+}

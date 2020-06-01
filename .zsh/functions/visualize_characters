@@ -1,0 +1,48 @@
+# -*- mode: sh; sh-shell: zsh -*-
+
+visualize_characters() {
+    local res=''
+    integer i=1
+    local beg="$2"
+    local end="$3"
+    while (( $i <= $#1 )); do
+        case "${1[$i]}" in
+            $'\000') res+="$beg^@$end";;
+            $'\001') res+="$beg^A$end";;
+            $'\002') res+="$beg^B$end";;
+            $'\003') res+="$beg^C$end";;
+            $'\004') res+="$beg^D$end";;
+            $'\005') res+="$beg^E$end";;
+            $'\006') res+="$beg^F$end";;
+            $'\007') res+="$beg^G$end";;
+            $'\010') res+="$beg^H$end";;
+            $'\011') res+="$beg^I$end";;
+            $'\012') res+="$beg^J$end";;
+            $'\013') res+="$beg^K$end";;
+            $'\014') res+="$beg^L$end";;
+            $'\015') res+="$beg^M$end";;
+            $'\016') res+="$beg^N$end";;
+            $'\017') res+="$beg^O$end";;
+            $'\020') res+="$beg^P$end";;
+            $'\021') res+="$beg^Q$end";;
+            $'\022') res+="$beg^R$end";;
+            $'\023') res+="$beg^S$end";;
+            $'\024') res+="$beg^T$end";;
+            $'\025') res+="$beg^U$end";;
+            $'\026') res+="$beg^V$end";;
+            $'\027') res+="$beg^W$end";;
+            $'\030') res+="$beg^X$end";;
+            $'\031') res+="$beg^Y$end";;
+            $'\032') res+="$beg^Z$end";;
+            $'\033') res+="$beg^[$end";;
+            $'\034') res+="$beg^\$end";;
+            $'\035') res+="$beg^]$end";;
+            $'\036') res+="$beg^^$end";;
+            $'\037') res+="$beg^_$end";;
+            $'\177') res+="$beg^?$end";;
+            *) res+="${1[$i]}";;
+        esac
+        i+=1
+    done
+    echo "$res"
+}

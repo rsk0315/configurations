@@ -1,0 +1,41 @@
+# -*- mode: sh; sh-shell: zsh -*-
+
+numeric_argument() {
+    local sout=''
+    local spush=''
+    local END_CHAR=$'\x15'  # ^U; Should use $KEYS instead?
+    local ABORT_CHAR=$'\x07'  # ^G
+    local PROMPT='Numeric argument:'
+    zle -R "$PROMPT _"
+    while :; do
+        read -k ch
+        if [[ -z "$ch" ]]; then
+            continue
+        elif [[ "$ch" =~ [[:digit:]] ]]; then
+            sout+="$ch"
+            spush+=$'\x1b'"$ch"
+        elif [[ "$ch" == '-' ]]; then
+            if [[ -z "$sout" ]]; then
+                sout+=-
+                spush+=$'\x1b'-
+            elif [[ "$sout" == - ]]; then
+                sout=''
+                spush=''
+            else
+                zle -U "$spush-"
+                return 0
+            fi
+        elif [[ "$ch" == "$END_CHAR" ]]; then
+            zle -R "$PROMPT ${sout}"
+            read -k ch
+            zle -U "$spush$ch"
+            return 0
+        elif [[ "$ch" == "$ABORT_CHAR" ]]; then
+            return 1
+        else
+            zle -U "$spush$ch"
+            return 0
+        fi
+        zle -R "$PROMPT ${sout}_"
+    done
+}
