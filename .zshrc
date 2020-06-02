@@ -77,14 +77,6 @@ preexec() {
     state='executing'
 }
 
-# TRAPINT() {
-#     if [[ "$state" != 'executing' ]]; then
-#         print -P '%B%S^C%s%b'
-#     fi
-#     return $((128+$1))
-# }
-# This does not get along with isearch mode...
-
 
 ## Functions ##
 
@@ -106,10 +98,8 @@ bindkey '^U' universal-argument
 bindkey '^W' kill-region
 bindkey '^I' expand-or-complete-prefix
 
-autoload -U numeric_argument abort
+autoload -U numeric_argument
 zle -N numeric_argument && bindkey '^U' numeric_argument
-# zle -N abort && bindkey '^G' abort '^[^G' abort
-# This does not get along with isearch mode...
 
 
 ## Completions ##
