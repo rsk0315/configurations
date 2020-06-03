@@ -1,0 +1,6 @@
+# -*- mode: sh; sh-shell: zsh -*-
+#autoload
+
+zle -R 'Key binding: '
+zle .read-command
+zle -R '' "$(bindkey "$(visualize-characters $KEYS)")"

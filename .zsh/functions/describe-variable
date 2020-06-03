@@ -1,0 +1,67 @@
+# -*- mode: sh; sh-shell: zsh -*-
+#autoload
+
+local -i i=$CURSOR
+if (( CURSOR == $#BUFFER )) || [[ "${BUFFER:$i:1}" == ' ' ]]; then
+    if (( $#BUFFER == 0 )); then return 1; fi
+    (( i -= 1 ))
+fi
+
+if (( i > 0 )) && ! [[ "${BUFFER:$i:1}" =~ '[_0-9A-Za-z*@#?$!-]' ]]; then
+    # in case of ${foo}
+    #                 ^ cursor is here
+    (( i -= 1 ))
+fi
+
+# See http://zsh.sourceforge.net/Doc/Release/Parameters.html
+
+local param="${BUFFER:$i:1}"
+local pat='[_0-9A-Za-z]'  # ?
+if [[ "$param" =~ [*@#?$!-] ]]; then
+    # single-character paramter
+elif ! [[ "$param" =~ "$pat" ]]; then
+    zle -R '' "Invalid: '${param}'"
+    return 1
+else
+    local -i il=$i ir=$i
+    while (( il-1 >= 0 )) && [[ "${BUFFER:((il-1)):1}" =~ "$pat" ]]; do
+        (( il -= 1 ))
+    done
+    if ! [[ "${BUFFER:((il)):(($CURSOR-il+1))}" =~ [_A-Za-z] ]]; then
+        pat='[0-9]'  # ?
+    fi
+    while (( ir+1 < $#BUFFER )) && [[ "${BUFFER:((ir+1)):1}" =~ "$pat" ]]; do
+        (( ir += 1 ))
+    done
+    local len=$(( ir-il+1 ))
+    param="${BUFFER:$il:$len}"
+fi
+
+if ! [[ -v "$param" ]]; then
+    zle -R '' "${param} is unset."
+    return 1
+fi
+
+local rhs
+if [[ "${parameters[$param]}" =~ '^(scalar|integer)' ]]; then
+    rhs="${(Pq+)param}"
+elif [[ "${parameters[$param]}" =~ '^array' ]]; then
+    rhs='('
+    i=1
+    while (( i <= ${#${(P)param}} )); do
+        rhs+=" ${(q+)${(P)param}[$i]}"
+        (( i += 1 ))
+    done
+    rhs+=' )'
+elif [[ "${parameters[$param]}" =~ '^association' ]]; then
+    # typeset -A a=([a]=1 [b]=2 [c=]="=a'"$'\n'\'\"\=ac1'  '@ [\ ]=123)
+    rhs='('
+    for k in ${(ko)${(P)param}}; do
+        rhs+=" [${(q+)k}]=${(q+)${(P)param}[$k]}"
+    done
+    rhs+=' )'
+fi
+
+zle -R '' "$param=$rhs"
+
+## some special parameters ($0, $_, $?, $BUFFER, etc.) make me tsurai

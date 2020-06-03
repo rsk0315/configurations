@@ -38,16 +38,17 @@ export WORDCHARS=''
 
 export fignore=(.o '~')
 export fpath=(~/.zsh/completions ~/.zsh/functions $fpath)
+
 # https://github.com/zsh-users/zsh/blob/96a79938010073d14bd9db31924f7646968d2f4a/Completion/Unix/Command/_git
 # Put it in ~/.zsh/completions/
 
 ### Prompt String ###
 # See https://unix.stackexchange.com/questions/40595/
-autoload -U smart_exit_status
+autoload -U smart-exit-status
 PS1='%f'
-PS1+=$'%(1v_$(smart_exit_status $?)\n_)'  # exit status
+PS1+=$'%(1v_$(smart-exit-status $?)\n_)'  # exit status
 PS1+=$'\n%f'
-PS1+="$ZSH_PATCHLEVEL [$SHLVL]"  # shell information
+PS1+="$ZSH_PATCHLEVEL [%L]"  # shell information
 PS1+="%(1j. (%j job%(2j s )%).)"  # jobs
 PS1+=$'\n'
 PS1+='%F{45}%~/%f'  # current directory
@@ -55,9 +56,8 @@ PS1+=$'\n'
 PS1+='%# '  # prompt character
 
 ### Paths ###
-# !! Set properly !!
-#path=(... $path) ...
-#manpath=(... $manpath) ...
+# path=(... $path)
+# manpath=(... $manpath)
 
 
 ## Hook Functions ##
@@ -71,16 +71,25 @@ precmd() {
         state='standby'
         psvar=()
     fi
+    stty intr undef  # ^c
 }
 
 preexec() {
     state='executing'
+    stty intr '^c'
+}
+
+TRAPINT() {
+    if [[ "$state" != 'executing' ]]; then
+        print -P '%B%S^C%s%b'
+    fi
+    return $((128+$1))
 }
 
 
 ## Functions ##
 
-autoload -U visualize_characters
+autoload -U visualize-characters
 
 
 ## Key Bindings ##
@@ -98,8 +107,28 @@ bindkey '^U' universal-argument
 bindkey '^W' kill-region
 bindkey '^I' expand-or-complete-prefix
 
-autoload -U numeric_argument
-zle -N numeric_argument && bindkey '^U' numeric_argument
+autoload -U numeric-argument
+zle -N numeric-argument && bindkey '^U' numeric-argument
+
+autoload -U send-invisible
+zle -N send-invisible && bindkey '^X ' send-invisible
+
+autoload -U zletest
+zle -N zletest && bindkey '^X^Z' zletest
+
+autoload -U interrupt-line
+zle -N interrupt-line && bindkey '^C' interrupt-line
+
+autoload -U abort
+zle -N abort && bindkey '^G' abort '^[^G' abort
+bindkey -M isearch '^G' send-break '^[^G' send-break
+bindkey -M isearch '^C' send-break
+
+autoload -U describe-key
+zle -N describe-key && bindkey '^X^Hk' describe-key
+
+autoload -U describe-variable
+zle -N describe-variable && bindkey '^X^Hv' describe-variable
 
 
 ## Completions ##

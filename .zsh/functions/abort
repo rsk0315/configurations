@@ -1,0 +1,12 @@
+# -*- mode: sh; sh-shell: zsh -*-
+#autoload
+
+if [[ $CONTEXT == vared ]]; then
+    print
+    print -P '%SAborted.%s%E'
+    print -nP '%E'
+    zle -c
+    zle send-break
+else
+    zle .beep
+fi

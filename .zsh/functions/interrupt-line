@@ -1,0 +1,8 @@
+# -*- mode: sh; sh-shell: zsh -*-
+#autoload
+
+print
+print -P '%SAborted.%s%E'
+print -nP '%E'
+
+zle send-break
