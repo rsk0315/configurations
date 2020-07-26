@@ -1,0 +1,64 @@
+# -*- mode: sh; sh-shell: zsh -*-
+#autoload
+
+# ----------------------------------------------------------------
+_get_word_() {
+    typeset -g NAME="${words[$CURRENT]}"
+    compadd $BUFFER
+}
+zle -C _get_word expand-or-complete _get_word_
+
+_unquote() {
+    zsh -c "echo -E - $1"  # maybe unsafe
+}
+zle -N _unquote
+
+_get_unquoted_word() {
+    local save_buffer=$BUFFER
+    local save_cursor=$CURSOR
+    zle _get_word
+    typeset -g NAME="$(_unquote $NAME)"
+    if [[ -z "$NAME" ]] && (( CURSOR > 0 )); then
+        (( CURSOR -= 1 ))
+        zle _get_word
+        NAME="$(_unquote $NAME)"
+    fi
+    BUFFER=$save_buffer
+    CURSOR=$save_cursor
+}
+zle -N _get_unquoted_word
+
+zle _get_unquoted_word
+# zle -R '' "$NAME"
+# ----------------------------------------------------------------
+
+local body="${functions[$NAME]}"
+if [[ -z "$body" ]]; then
+    body="${functions[${NAME% }]}"
+fi
+
+if [[ "${body[1]}" == $'\t' ]]; then
+    body=$'describe-funtion:\n'"$NAME() {"$'\n'"$body"$'\n'"}"
+    echo -E - "$body" | less
+elif [[ -z "$body" ]]; then
+    zle -R '' "describe-funtion: $NAME is not found"
+else
+    zle -R '' "describe-funtion ($NAME): $body"
+fi
+
+# ----------------------------------------------------------------
+
+# XXX Need checks
+
+# local body="${functions[$NAME]}"
+# if [[ -z "$body" ]]; then
+#     body="${functions[${NAME% }]}"
+# fi
+
+# if [[ "${body[1]}" == $'\t' ]]; then
+#     body="$NAME() {"$'\n'"$body"$'\n'"}"
+#     cat "$body" | less
+# else
+#     zle -R '' "$body"
+# fi
+

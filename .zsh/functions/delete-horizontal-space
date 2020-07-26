@@ -1,0 +1,15 @@
+# -*- mode: sh; sh-shell: zsh -*-
+#autoload
+
+integer lpop=$#LBUFFER rpop=1
+
+while [[ ${LBUFFER[$lpop]} == [[:space:]] ]]; do
+    lpop+=-1
+done
+while [[ ${RBUFFER[$rpop]} == [[:space:]] ]]; do
+    rpop+=1
+done
+
+LBUFFER=${LBUFFER[1,$lpop]}
+RBUFFER=${RBUFFER[$rpop,$#RBUFFER]}
+CURSOR=$#LBUFFER
