@@ -50,8 +50,10 @@ PS1+=$'%(1v_$(smart-exit-status $?)\n_)'  # exit status
 PS1+=$'\n%f'
 PS1+="$ZSH_PATCHLEVEL [%L]"  # shell information
 PS1+="%(1j. (%j job%(2j s )%).)"  # jobs
+PS1+=' %F{238}%D{%Y-%m-%d %H:%M:%S}'  # time
 PS1+=$'\n'
 PS1+='%F{45}%~/%f'  # current directory
+PS1+='$(__git_ps1 " %%F{162}(on %s)%%f")'  # git branch
 PS1+=$'\n'
 PS1+='%# '  # prompt character
 
@@ -90,6 +92,7 @@ TRAPINT() {
 ## Functions ##
 
 autoload -U visualize-characters
+. ~/.zsh/git-prompt.sh
 
 
 ## Key Bindings ##
@@ -159,7 +162,13 @@ alias cp='cp -iv'
 alias rm='rm -iv'
 alias mv='mv -iv'
 
-alias ll=' exa -l --sort=Name --time-style=long-iso'
+alias ll='exa -l --sort=Name --time-style=long-iso'
+alias lll='exa -l --sort=Name --time-style=long-iso --tree'
+
+alias cb='cargo build'
+alias cr='cargo run'
+
+alias g-s='git status'
 
 
 ## Variables ##
@@ -173,7 +182,7 @@ unset LESS_TERMCAP_so
 export LESS_TERMCAP_ue=$'\e[m'
 export LESS_TERMCAP_us=$'\e[4;38;5;146m'
 export LESS=-NR
-export BAT_PAGER='less -FRn'
+export BAT_PAGER='less -Rn'
 export EXA_COLORS='uu=38;5;10:un=38;5;9:da=38;5;140:ur=1;37:gr=38;5;15:tr=38;5;15:gw=38;5;9:tw=38;5;9:gx=38;5;10:tx=38;5;10:di=1;38;5;68:cc=1;31:ln=1;38;5;213:xx=37:ga=38;5;10:gm=38;5;10:gd=38;5;9:xa=38;5;13'
 
 # export CXX=g++-10
