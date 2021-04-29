@@ -167,6 +167,7 @@ alias lll='exa -l --sort=Name --time-style=long-iso --tree'
 
 alias cb='cargo build'
 alias cr='cargo run'
+alias ct='cargo test'
 
 alias g-s='git status'
 
