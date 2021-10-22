@@ -37,7 +37,12 @@ export SPROMPT='zsh: correct '\''%B%R%b'\'' to '\''%B%r%b'\'' ([n]/y/a/e)? '
 export WORDCHARS=''
 
 export fignore=(.o '~')
-export fpath=(~/.zsh/completions ~/.zsh/functions $fpath)
+export fpath=(
+    ~/.zsh/completions
+    ~/.zsh/functions
+    ~/git/rsk0315/configurations/.zsh/functions
+    $fpath
+)
 
 # https://github.com/zsh-users/zsh/blob/96a79938010073d14bd9db31924f7646968d2f4a/Completion/Unix/Command/_git
 # Put it in ~/.zsh/completions/
@@ -140,8 +145,14 @@ zle -N describe-function && bindkey '^X^Hf' describe-function
 autoload -U delete-horizontal-space
 zle -N delete-horizontal-space && bindkey '^[\' delete-horizontal-space
 
+autoload -U just-one-space
+zle -N just-one-space && bindkey '^[ ' just-one-space
+
 
 ## Completions ##
+
+zmodload zsh/complist
+zstyle ':completion:*' show-ambiguity '1;32'
 
 zstyle ':completion:*' matcher-list 'r:|[._-]=** r:|/=* r:|=*'
 autoload -Uz compinit
