@@ -177,7 +177,9 @@ alias ll='exa -l --sort=Name --time-style=long-iso'
 alias lll='exa -l --sort=Name --time-style=long-iso --tree'
 
 alias cb='cargo build'
+alias cbr='cargo build --release'
 alias cr='cargo run'
+alias crr='cargo run --release'
 alias ct='cargo test'
 
 alias g-s='git status'
@@ -197,4 +199,4 @@ export LESS=-NR
 export BAT_PAGER='less -Rn'
 export EXA_COLORS='uu=38;5;10:un=38;5;9:da=38;5;140:ur=1;37:gr=38;5;15:tr=38;5;15:gw=38;5;9:tw=38;5;9:gx=38;5;10:tx=38;5;10:di=1;38;5;68:cc=1;31:ln=1;38;5;213:xx=37:ga=38;5;10:gm=38;5;10:gd=38;5;9:xa=38;5;13'
 
-# export CXX=g++-10
+# export CXX=g++-11
