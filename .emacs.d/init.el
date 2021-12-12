@@ -70,9 +70,8 @@
 ;; (setq skk-tut-file "~/git/skk-dev/ddskk/etc/SKK.tut")
 
 ;; https://stackoverflow.com/questions/9288181/converting-from-camelcase-to-in-emacs
-(global-set-key (kbd "C-c i") 'string-inflection-cycle)
-(global-set-key (kbd "C-c C") 'string-inflection-camelcase)          ;; UpperCamelCase
-(global-set-key (kbd "C-c c") 'string-inflection-lower-camelcase)    ;; lowerCamelCase
-(global-set-key (kbd "C-c -") 'string-inflection-kebab-case)         ;; kebab-case
-(global-set-key (kbd "C-c _") 'string-inflection-underscore)         ;; kebab-case
-(global-set-key (kbd "C-c =") 'string-inflection-capital-underscore) ;; kebab-case
+(global-set-key (kbd "C-c C") 'string-inflection-camelcase)       ;; UpperCamelCase
+(global-set-key (kbd "C-c c") 'string-inflection-lower-camelcase) ;; lowerCamelCase
+(global-set-key (kbd "C-c -") 'string-inflection-kebab-case)      ;; kebab-case
+(global-set-key (kbd "C-c _") 'string-inflection-underscore)      ;; snake_case
+(global-set-key (kbd "C-c =") 'string-inflection-upcase)          ;; SCREAMING_SNAKE_CASE
