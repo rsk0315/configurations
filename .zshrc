@@ -37,7 +37,12 @@ export SPROMPT='zsh: correct '\''%B%R%b'\'' to '\''%B%r%b'\'' ([n]/y/a/e)? '
 export WORDCHARS=''
 
 export fignore=(.o '~')
-export fpath=(~/.zsh/completions ~/.zsh/functions $fpath)
+export fpath=(
+    ~/.zsh/completions
+    ~/.zsh/functions
+    ~/git/rsk0315/configurations/.zsh/functions
+    $fpath
+)
 
 # https://github.com/zsh-users/zsh/blob/96a79938010073d14bd9db31924f7646968d2f4a/Completion/Unix/Command/_git
 # Put it in ~/.zsh/completions/
@@ -50,8 +55,10 @@ PS1+=$'%(1v_$(smart-exit-status $?)\n_)'  # exit status
 PS1+=$'\n%f'
 PS1+="$ZSH_PATCHLEVEL [%L]"  # shell information
 PS1+="%(1j. (%j job%(2j s )%).)"  # jobs
+PS1+=' %F{238}%D{%Y-%m-%d %H:%M:%S}'  # time
 PS1+=$'\n'
 PS1+='%F{45}%~/%f'  # current directory
+PS1+='$(__git_ps1 " %%F{162}(on %s)%%f")'  # git branch
 PS1+=$'\n'
 PS1+='%# '  # prompt character
 
@@ -90,6 +97,7 @@ TRAPINT() {
 ## Functions ##
 
 autoload -U visualize-characters
+. ~/.zsh/git-prompt.sh
 
 
 ## Key Bindings ##
@@ -137,8 +145,14 @@ zle -N describe-function && bindkey '^X^Hf' describe-function
 autoload -U delete-horizontal-space
 zle -N delete-horizontal-space && bindkey '^[\' delete-horizontal-space
 
+autoload -U just-one-space
+zle -N just-one-space && bindkey '^[ ' just-one-space
+
 
 ## Completions ##
+
+zmodload zsh/complist
+zstyle ':completion:*' show-ambiguity '1;32'
 
 zstyle ':completion:*' matcher-list 'r:|[._-]=** r:|/=* r:|=*'
 autoload -Uz compinit
@@ -159,7 +173,16 @@ alias cp='cp -iv'
 alias rm='rm -iv'
 alias mv='mv -iv'
 
-alias ll=' exa -l --sort=Name --time-style=long-iso'
+alias ll='exa -l --sort=Name --time-style=long-iso'
+alias lll='exa -l --sort=Name --time-style=long-iso --tree'
+
+alias cb='cargo build'
+alias cbr='cargo build --release'
+alias cr='cargo run'
+alias crr='cargo run --release'
+alias ct='cargo test'
+
+alias g-s='git status'
 
 
 ## Variables ##
@@ -176,4 +199,4 @@ export LESS=-NR
 export BAT_PAGER='less -Rn'
 export EXA_COLORS='uu=38;5;10:un=38;5;9:da=38;5;140:ur=1;37:gr=38;5;15:tr=38;5;15:gw=38;5;9:tw=38;5;9:gx=38;5;10:tx=38;5;10:di=1;38;5;68:cc=1;31:ln=1;38;5;213:xx=37:ga=38;5;10:gm=38;5;10:gd=38;5;9:xa=38;5;13'
 
-# export CXX=g++-10
+# export CXX=g++-11
