@@ -181,6 +181,7 @@ alias cbr='cargo build --release'
 alias cr='cargo run'
 alias crr='cargo run --release'
 alias ct='cargo test'
+alias ctr='cargo test --release'
 
 alias g-s='git status'
 
