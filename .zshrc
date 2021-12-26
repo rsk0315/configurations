@@ -58,7 +58,7 @@ PS1+="%(1j. (%j job%(2j s )%).)"  # jobs
 PS1+=' %F{238}%D{%Y-%m-%d %H:%M:%S}'  # time
 PS1+=$'\n'
 PS1+='%F{45}%~/%f'  # current directory
-PS1+='$(__git_ps1 " %%F{162}(on %s)%%f")'  # git branch
+PS1+='$(__git_ps1 " %%F{168}(on %s)%%f")'  # git branch
 PS1+=$'\n'
 PS1+='%# '  # prompt character
 
