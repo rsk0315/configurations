@@ -19,6 +19,7 @@ setopt append_create
 unsetopt clobber
 setopt correct
 unsetopt correct_all
+setopt extended_glob
 setopt extended_history
 setopt histverify
 setopt interactive_comments
