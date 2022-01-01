@@ -38,10 +38,15 @@ save_region_highlight=("${region_highlihght[@]}")
             (accept-*)
                 break
                 ;;
+            (abort)
+                zle .beep
+                FILENAME=
+                break
+                ;;
             (*)
                 LBUFFER="$editor "$lb
                 RBUFFER=$rb
-                # XXXsearch, describe, send-invisible など、
+                # XXX search, describe, send-invisible など、
                 # 処理がすぐ戻ってこないものを実行すると $editor が漏れてしまう
                 zle $REPLY
                 local before=$#LBUFFER
