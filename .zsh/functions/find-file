@@ -1,0 +1,74 @@
+# -*- mode: sh; sh-shell: zsh -*-
+#autoload
+
+# based on: zle send-invisible
+# see also: https://github.com/zsh-users/zsh/blob/master/Functions/Zle/send-invisible
+
+local editor=${EDITOR:-emacs}
+
+emulate -L zsh
+
+local FILENAME=
+
+local pretext="$PREDISPLAY$LBUFFER$RBUFFER$POSTDISPLAY"$'\n'
+
+local save_lbuffer=$LBUFFER
+local save_rbuffer=$RBUFFER
+local save_predisplay=$PREDISPLAY
+local save_postdisplay=$POSTDISPLAY
+local -a save_region_highlight
+save_region_highlight=("${region_highlihght[@]}")
+
+{
+    local lb rb
+    LBUFFER=
+    RBUFFER=
+    PREDISPLAY="$pretext${1:-Find file: }"
+    POSTDISPLAY=
+    region_highlight=("P${(m)#pretext} ${(m)#PREDISPLAY} bold")
+
+    while zle -R && zle .read-command; do
+        case $REPLY in
+            (find-file | run-help | undefined-key | where-is | which-command)
+                zle .beep
+                ;;
+            (push-* | send-break)
+                FILENAME=
+                ;&
+            (accept-*)
+                break
+                ;;
+            (*)
+                LBUFFER="$editor "$lb
+                RBUFFER=$rb
+                # XXXsearch, describe, send-invisible など、
+                # 処理がすぐ戻ってこないものを実行すると $editor が漏れてしまう
+                zle $REPLY
+                local before=$#LBUFFER
+                LBUFFER=${LBUFFER:$(($#editor + 1))}
+                local after=$#LBUFFER
+                local off=$(($#editor + 1 - (before - after)))
+                RBUFFER=${RBUFFER:$off}
+                lb=$LBUFFER
+                rb=$RBUFFER
+                FILENAME=$BUFFER
+                region_highlight=("P${(m)#pretext} ${(m)#PREDISPLAY} bold")
+                ;;
+        esac
+    done
+} always {
+    LBUFFER=$save_lbuffer
+    RBUFFER=$save_rbuffer
+    PREDISPLAY=$save_predisplay
+    POSTDISPLAY=$save_postdisplay
+    region_highlight=("${save_region_highlight[@]}")
+    zle -R
+
+    zle push-line
+    if [[ "$REPLY" == interrupt-line ]]; then
+        false
+    elif [[ -n "$FILENAME" ]]; then
+        LBUFFER="${EDITOR:-emacs} $FILENAME"
+        zle accept-line
+    fi
+}

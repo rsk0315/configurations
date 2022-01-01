@@ -149,6 +149,9 @@ zle -N delete-horizontal-space && bindkey '^[\' delete-horizontal-space
 autoload -U just-one-space
 zle -N just-one-space && bindkey '^[ ' just-one-space
 
+autoload -U find-file
+zle -N find-file && bindkey '^X^F' find-file
+
 
 ## Completions ##
 
