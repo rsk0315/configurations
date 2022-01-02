@@ -2,6 +2,7 @@
 
 
 # Contents are listed in following order:
+#     Modules
 #     Options
 #     Shell Variables
 #     Hook Functions
@@ -11,6 +12,13 @@
 #     Highlightings
 #     Aliases
 #     Variables
+
+
+## Modules
+
+
+zmodload zsh/pcre
+zmodload zsh/complist
 
 
 ## Options ##
@@ -26,6 +34,7 @@ setopt interactive_comments
 setopt magic_equal_subst
 setopt noautomenu
 setopt prompt_subst
+setopt re_match_pcre
 
 
 ## Shell Variables ##
@@ -155,7 +164,6 @@ zle -N find-file && bindkey '^X^F' find-file
 
 ## Completions ##
 
-zmodload zsh/complist
 zstyle ':completion:*' show-ambiguity '1;32'
 
 zstyle ':completion:*' matcher-list 'r:|[._-]=** r:|/=* r:|=*'
