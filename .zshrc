@@ -142,15 +142,17 @@ zle -N abort && bindkey '^G' abort '^[^G' abort
 bindkey -M isearch '^G' send-break '^[^G' send-break
 bindkey -M isearch '^C' send-break
 
+bindkey -r '^H'
+
 autoload -U describe-key
-zle -N describe-key && bindkey '^X^Hk' describe-key
+zle -N describe-key && bindkey '^Hk' describe-key
 
 autoload -U describe-variable
-zle -N describe-variable && bindkey '^X^Hv' describe-variable
+zle -N describe-variable && bindkey '^Hv' describe-variable
 
 autoload -U input-function-name && zle -N input-function-name
 autoload -U describe-function
-zle -N describe-function && bindkey '^X^Hf' describe-function
+zle -N describe-function && bindkey '^Hf' describe-function
 
 autoload -U delete-horizontal-space
 zle -N delete-horizontal-space && bindkey '^[\' delete-horizontal-space
