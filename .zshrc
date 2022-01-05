@@ -2,6 +2,7 @@
 
 
 # Contents are listed in following order:
+#     Modules
 #     Options
 #     Shell Variables
 #     Hook Functions
@@ -13,18 +14,27 @@
 #     Variables
 
 
+## Modules
+
+
+zmodload zsh/pcre
+zmodload zsh/complist
+
+
 ## Options ##
 
 setopt append_create
 unsetopt clobber
 setopt correct
 unsetopt correct_all
+setopt extended_glob
 setopt extended_history
 setopt histverify
 setopt interactive_comments
 setopt magic_equal_subst
 setopt noautomenu
 setopt prompt_subst
+setopt re_match_pcre
 
 
 ## Shell Variables ##
@@ -58,7 +68,7 @@ PS1+="%(1j. (%j job%(2j s )%).)"  # jobs
 PS1+=' %F{238}%D{%Y-%m-%d %H:%M:%S}'  # time
 PS1+=$'\n'
 PS1+='%F{45}%~/%f'  # current directory
-PS1+='$(__git_ps1 " %%F{162}(on %s)%%f")'  # git branch
+PS1+='$(__git_ps1 " %%F{168}(on %s)%%f")'  # git branch
 PS1+=$'\n'
 PS1+='%# '  # prompt character
 
@@ -132,15 +142,17 @@ zle -N abort && bindkey '^G' abort '^[^G' abort
 bindkey -M isearch '^G' send-break '^[^G' send-break
 bindkey -M isearch '^C' send-break
 
+bindkey -r '^H'
+
 autoload -U describe-key
-zle -N describe-key && bindkey '^X^Hk' describe-key
+zle -N describe-key && bindkey '^Hk' describe-key
 
 autoload -U describe-variable
-zle -N describe-variable && bindkey '^X^Hv' describe-variable
+zle -N describe-variable && bindkey '^Hv' describe-variable
 
 autoload -U input-function-name && zle -N input-function-name
 autoload -U describe-function
-zle -N describe-function && bindkey '^X^Hf' describe-function
+zle -N describe-function && bindkey '^Hf' describe-function
 
 autoload -U delete-horizontal-space
 zle -N delete-horizontal-space && bindkey '^[\' delete-horizontal-space
@@ -148,10 +160,12 @@ zle -N delete-horizontal-space && bindkey '^[\' delete-horizontal-space
 autoload -U just-one-space
 zle -N just-one-space && bindkey '^[ ' just-one-space
 
+autoload -U find-file
+zle -N find-file && bindkey '^X^F' find-file
+
 
 ## Completions ##
 
-zmodload zsh/complist
 zstyle ':completion:*' show-ambiguity '1;32'
 
 zstyle ':completion:*' matcher-list 'r:|[._-]=** r:|/=* r:|=*'
@@ -181,6 +195,7 @@ alias cbr='cargo build --release'
 alias cr='cargo run'
 alias crr='cargo run --release'
 alias ct='cargo test'
+alias ctr='cargo test --release'
 
 alias g-s='git status'
 
