@@ -93,6 +93,7 @@ precmd() {
 
 preexec() {
     state='executing'
+    print -P ${(l:COLUMNS-19:)}'%F{238}%D{%Y-%m-%d %H:%M:%S}%f'
     stty intr '^c'
 }
 
