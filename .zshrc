@@ -43,7 +43,7 @@ export HISTFILE=${ZDOTDIR:-$HOME}/.zhistory
 export HISTSIZE=100000
 export PROMPT_EOL_MARK='%B%S%#%s%b'
 export SAVEHIST=100000
-export SPROMPT='zsh: correct '\''%B%R%b'\'' to '\''%B%r%b'\'' ([n]/y/a/e)? '
+export SPROMPT='zsh: correct '\''%B%R%b'\'' to '\''%B%r%b'\'' ([n]/y/a/e)? %B'
 export WORDCHARS=''
 
 export fignore=(.o '~')
@@ -92,8 +92,26 @@ precmd() {
 }
 
 preexec() {
+    # print -R "\$1: '$1'"
+    # print -R "\$2: '$2'"
+    # print -R "\$3: '$3'"
+
+    print -Pn '%f%k%b%s%u'
+
+    ts='%F{238}%D{%Y-%m-%d %H:%M:%S}%f'
+
+    # `if>` や `for>` のプロンプトの有無の判定が不可能なので、複数行のときは諦める。
+    # PS1 の最後の行の文字数の問題もあるが、`%# ` で決め打ちにしちゃう。
+    # あーでも他もろもろの理由で変になることはあるかなあ。
+    lastlen=$(( ${#1##*$'\n'} % COLUMNS ))
+    if [[ "$1" =~ '\n' ]] || ((lastlen >= COLUMNS - 21)); then
+        print -P ${(l:COLUMNS-19:)}'%F{238}%D{%Y-%m-%d %H:%M:%S}%f'
+    else
+        csi=$'\x1b['
+        print -P "${csi}1A${csi}${COLUMNS}C${csi}18D${ts}"
+    fi
+
     state='executing'
-    print -P ${(l:COLUMNS-19:)}'%F{238}%D{%Y-%m-%d %H:%M:%S}%f'
     stty intr '^c'
 }
 
