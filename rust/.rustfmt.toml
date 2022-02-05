@@ -1,5 +1,6 @@
 # ~/Library/Preferences/rustfmt/.rustfmt.toml
 
+version = "Two" # https://github.com/rust-lang/rustfmt/issues/4351
 unstable_features = true
 
 max_width = 80
