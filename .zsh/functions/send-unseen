@@ -1,0 +1,52 @@
+# -*- mode: sh; sh-shell: zsh -*-
+#autoload
+
+
+emulate -L zsh
+typeset -gHa unseen
+local cur
+local len=${#unseen}
+local pretext="$PREDISPLAY$LBUFFER$RBUFFER$POSTDISPLAY"$'\n'
+local save_lbuffer=$LBUFFER
+local save_rbuffer=$RBUFFER
+local save_predisplay=$PREDISPLAY
+local save_postdisplay=$POSTDISPLAY
+local -a save_region_highlight
+save_region_highlight=("${region_highlight[@]}")
+{
+    # 1-indexed っぽいので。
+    local lb rb opn=${2:-'${'} cls=${3:-"[$((len + 1))]}"}
+    LBUFFER=
+    RBUFFER=
+    PREDISPLAY="$pretext${1:-Non-echoed text: }"
+    POSTDISPLAY=
+    region_highlight=("P${(m)#pretext} ${(m)#PREDISPLAY} bold")
+
+    while zle -R && zle .read-command
+    do
+	case $REPLY in
+	    (send-invisible|run-help|undefined-key|where-is|which-command) zle .beep ;;
+	    (push-*|send-break) cur=  ;&
+	    (accept-*) break ;;
+	    (*) LBUFFER=$lb
+		RBUFFER=$rb
+		zle $REPLY
+		lb=$LBUFFER
+		rb=$RBUFFER
+		cur=$BUFFER
+                unseen[$((len + 1))]=$cur
+		LBUFFER=${(l:$#LBUFFER::*:):-}
+		RBUFFER=${(l:$#RBUFFER::*:):-}
+                region_highlight=("P${(m)#pretext} ${(m)#PREDISPLAY} bold")
+                ;;
+	esac
+    done
+} always {
+    LBUFFER=$save_lbuffer
+    RBUFFER=$save_rbuffer
+    PREDISPLAY=$save_predisplay
+    POSTDISPLAY=$save_postdisplay
+    region_highlight=("${save_region_highlight[@]}")
+    zle -R
+    LBUFFER+=${cur:+${opn}unseen${cls}}
+}

@@ -81,6 +81,7 @@ PS1+='%# '  # prompt character
 
 state='standby'
 precmd() {
+    unset unseen
     if [[ "$state" == 'executing' ]]; then
         state='executed'
         psvar=(1)
@@ -147,8 +148,10 @@ bindkey '^W' kill-region
 autoload -U numeric-argument
 zle -N numeric-argument && bindkey '^U' numeric-argument
 
-autoload -U send-invisible
-zle -N send-invisible && bindkey '^X ' send-invisible
+# autoload -U send-invisible
+# zle -N send-invisible && bindkey '^X ' send-invisible
+autoload -U send-unseen
+zle -N send-unseen && bindkey '^X ' send-unseen
 
 autoload -U zletest
 zle -N zletest && bindkey '^X^Z' zletest
