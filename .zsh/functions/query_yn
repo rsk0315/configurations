@@ -1,0 +1,58 @@
+# -*- mode: sh; sh-shell: zsh -*-
+query_yn() {
+    local default
+    case "$1" in
+        [yY])
+            default=yes
+            echo -n '[Y/n] ' >&2
+            ;;
+        [nN])
+            default=no
+            echo -n '[y/N] ' >&2
+            # RM_STAR_WAIT みたいに待つのもありかも。
+            ;;
+        *)
+            echo -n '[y/n] ' >&2
+    esac
+
+    local saved=$(stty -g)
+    stty -echo
+
+    local start=$(date +%s)
+    local wait_sec=${YN_NO_WAIT:-5}
+    local res
+    {
+        while [[ -z "$res" ]]; do
+            read -k r
+            if [[ "$default" == no ]]; then
+                local now=$(date +%s)
+                if (( wait_sec > now - start )); then
+                    continue
+                fi
+            fi
+
+            if [[ "$r" == y ]] || [[ "$r" == Y ]]; then
+                res=yes
+            elif [[ "$r" == n ]] || [[ "$r" == N ]]; then
+                res=no
+            elif [[ "$r" == $'\n' ]]; then
+                if [[ -n "$default" ]]; then
+                    res="$default"
+                fi
+            fi
+        done
+    } always {
+        stty $saved
+        if [[ -z "$res" ]]; then
+            echo $'\x1b[1;91maborted\x1b[m' >&2
+        fi
+    }
+
+    if [[ "$res" == yes ]]; then
+        echo $'\x1b[1;92myes\x1b[m' >&2
+        return 0
+    elif [[ "$res" == no ]]; then
+        echo $'\x1b[1;98mno\x1b[m' >&2
+        return 1
+    fi
+}

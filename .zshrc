@@ -49,8 +49,8 @@ export WORDCHARS=''
 export fignore=(.o '~')
 export fpath=(
     ~/.zsh/completions
-    ~/.zsh/functions
     ~/git/rsk0315/configurations/.zsh/functions
+    ~/.zsh/functions
     $fpath
 )
 
