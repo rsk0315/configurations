@@ -47,12 +47,12 @@ export SPROMPT='zsh: correct '\''%B%R%b'\'' to '\''%B%r%b'\'' ([n]/y/a/e)? %B'
 export WORDCHARS=''
 
 export fignore=(.o '~')
-export fpath=(
-    ~/.zsh/completions
-    ~/git/rsk0315/configurations/.zsh/functions
-    ~/.zsh/functions
-    $fpath
-)
+# export fpath=(
+#     ~/.zsh/completions
+#     ~/git/rsk0315/configurations/.zsh/functions
+#     ~/.zsh/functions
+#     $fpath
+# )
 
 # https://github.com/zsh-users/zsh/blob/96a79938010073d14bd9db31924f7646968d2f4a/Completion/Unix/Command/_git
 # Put it in ~/.zsh/completions/
