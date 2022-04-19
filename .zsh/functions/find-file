@@ -17,7 +17,7 @@ local save_rbuffer=$RBUFFER
 local save_predisplay=$PREDISPLAY
 local save_postdisplay=$POSTDISPLAY
 local -a save_region_highlight
-save_region_highlight=("${region_highlihght[@]}")
+save_region_highlight=("${region_highlight[@]}")
 
 {
     local lb rb
@@ -76,10 +76,10 @@ save_region_highlight=("${region_highlihght[@]}")
     region_highlight=("${save_region_highlight[@]}")
     zle -R
 
-    zle push-line
     if [[ "$REPLY" == interrupt-line ]]; then
         false
     elif [[ -n "$FILENAME" ]]; then
+        zle push-line
         LBUFFER="${EDITOR:-emacs} $FILENAME"
         zle accept-line
     fi
