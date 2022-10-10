@@ -1,0 +1,86 @@
+# -*- mode: sh; sh-shell: zsh -*-
+#autoload
+
+# based on: zle send-invisible
+# see also: https://github.com/zsh-users/zsh/blob/master/Functions/Zle/send-invisible
+
+local editor=${EDITOR:-bat}
+
+emulate -L zsh
+
+local FILENAME=
+
+local pretext="$PREDISPLAY$LBUFFER$RBUFFER$POSTDISPLAY"$'\n'
+
+local save_lbuffer=$LBUFFER
+local save_rbuffer=$RBUFFER
+local save_predisplay=$PREDISPLAY
+local save_postdisplay=$POSTDISPLAY
+local -a save_region_highlight
+save_region_highlight=("${region_highlight[@]}")
+
+{
+    local lb rb
+    LBUFFER=
+    RBUFFER=
+    PREDISPLAY="$pretext${1:-Find file read-only: }"
+    POSTDISPLAY=
+    region_highlight=("P${(m)#pretext} ${(m)#PREDISPLAY} bold")
+
+    while zle -R && zle .read-command; do
+        case $REPLY in
+            (find-file-read-only | run-help | undefined-key | where-is | which-command)
+                zle .beep
+                ;;
+            (push-* | send-break)
+                FILENAME=
+                ;&
+            (accept-*)
+                break
+                ;;
+            (abort)
+                zle .beep
+                FILENAME=
+                break
+                ;;
+            (*complete*)
+                LBUFFER="$editor "$lb
+                RBUFFER=$rb
+                zle $REPLY
+                local before=$#LBUFFER
+                LBUFFER=${LBUFFER:$(($#editor + 1))}
+                local after=$#LBUFFER
+                local off=$(($#editor + 1 - (before - after)))
+                RBUFFER=${RBUFFER:$off}
+                lb=$LBUFFER
+                rb=$RBUFFER
+                FILENAME=$BUFFER
+                region_highlight=("P${(m)#pretext} ${(m)#PREDISPLAY} bold")
+                ;;
+            (*)
+                LBUFFER=$lb
+                RBUFFER=$rb
+                zle $REPLY
+                lb=$LBUFFER
+                rb=$RBUFFER
+                FILENAME=$BUFFER
+                region_highlight=("P${(m)#pretext} ${(m)#PREDISPLAY} bold")
+                ;;
+        esac
+    done
+} always {
+    LBUFFER=$save_lbuffer
+    RBUFFER=$save_rbuffer
+    PREDISPLAY=$save_predisplay
+    POSTDISPLAY=$save_postdisplay
+    region_highlight=("${save_region_highlight[@]}")
+    zle -R
+
+    if [[ "$REPLY" == interrupt-line ]]; then
+        false
+    elif [[ -n "$FILENAME" ]]; then
+        zle push-line
+        LBUFFER="${EDITOR:-bat} $FILENAME"
+        zle accept-line
+    fi
+}

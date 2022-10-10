@@ -29,10 +29,11 @@ setopt correct
 unsetopt correct_all
 setopt extended_glob
 setopt extended_history
-setopt histverify
+setopt hist_ignore_space
+setopt hist_verify
 setopt interactive_comments
 setopt magic_equal_subst
-setopt noautomenu
+setopt no_auto_menu
 setopt prompt_subst
 setopt re_match_pcre
 
@@ -43,7 +44,7 @@ export HISTFILE=${ZDOTDIR:-$HOME}/.zhistory
 export HISTSIZE=100000
 export PROMPT_EOL_MARK='%B%S%#%s%b'
 export SAVEHIST=100000
-export SPROMPT='zsh: correct '\''%B%R%b'\'' to '\''%B%r%b'\'' ([n]/y/a/e)? %B'
+export SPROMPT="zsh: correct '%B%R%b' to '%B%r%b' ([n]/y/a/e)? %B"
 export WORDCHARS=''
 
 export fignore=(.o '~')
@@ -75,6 +76,8 @@ PS1+='%# '  # prompt character
 ### Paths ###
 # path=(... $path)
 # manpath=(... $manpath)
+
+typeset -U path manpath fpath
 
 
 ## Hook Functions ##
@@ -164,7 +167,7 @@ zle -N abort && bindkey '^G' abort '^[^G' abort
 bindkey -M isearch '^G' send-break '^[^G' send-break
 bindkey -M isearch '^C' send-break
 
-bindkey -r '^H'
+bindkey -r '^H' '^X^R'
 
 autoload -U describe-key
 zle -N describe-key && bindkey '^Hk' describe-key
@@ -185,6 +188,9 @@ zle -N just-one-space && bindkey '^[ ' just-one-space
 autoload -U find-file
 zle -N find-file && bindkey '^X^F' find-file
 
+autoload -U find-file-read-only
+zle -N find-file-read-only && bindkey '^X^R' find-file-read-only
+
 
 ## Completions ##
 
@@ -192,7 +198,7 @@ zstyle ':completion:*' show-ambiguity '1;32'
 
 zstyle ':completion:*' matcher-list 'r:|[._-]=** r:|/=* r:|=*'
 autoload -Uz compinit
-compinit
+# compinit  # これすると keymap 変わっちゃう？
 
 
 ## Highlightings ##
