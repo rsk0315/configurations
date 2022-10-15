@@ -7,8 +7,8 @@
 #     Shell Variables
 #     Hook Functions
 #     Functions
-#     Key bindings
 #     Completions
+#     Key bindings
 #     Highlightings
 #     Aliases
 #     Variables
@@ -133,6 +133,15 @@ autoload -U visualize-characters
 . ~/.zsh/git-prompt.sh
 
 
+## Completions ##
+
+zstyle ':completion:*' show-ambiguity '1;32'
+
+zstyle ':completion:*' matcher-list 'r:|[._-]=** r:|/=* r:|=*'
+autoload -Uz compinit
+compinit
+
+
 ## Key Bindings ##
 
 stty start undef  # ^q
@@ -190,15 +199,6 @@ zle -N find-file && bindkey '^X^F' find-file
 
 autoload -U find-file-read-only
 zle -N find-file-read-only && bindkey '^X^R' find-file-read-only
-
-
-## Completions ##
-
-zstyle ':completion:*' show-ambiguity '1;32'
-
-zstyle ':completion:*' matcher-list 'r:|[._-]=** r:|/=* r:|=*'
-autoload -Uz compinit
-# compinit  # これすると keymap 変わっちゃう？
 
 
 ## Highlightings ##
