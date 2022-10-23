@@ -2,3 +2,4 @@
 # sub-rule.desc
 
 zenkaku-symbols.rule	全角記号で入力したい記号たち
+azik_us.rule	「AZIK」用設定
