@@ -575,3 +575,5 @@ _\chi /ᵪ/
 \cdots /⋯/
 \ddots /⋱/
 \minuso /⦵/
+;; Other Symbols
+\emptyset /∅/
