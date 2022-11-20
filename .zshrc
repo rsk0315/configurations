@@ -110,7 +110,12 @@ preexec() {
     # `if>` や `for>` のプロンプトの有無の判定が不可能なので、複数行のときは諦める。
     # PS1 の最後の行の文字数の問題もあるが、`%# ` で決め打ちにしちゃう。
     # あーでも他もろもろの理由で変になることはあるかなあ。
+    # `%m%# ` のときうれしくなさそう。
     lastlen=$(( ${#1##*$'\n'} % COLUMNS ))
+    host=$(print -P %m)
+    if [[ $host =~ ^[0-9a-f]*$ ]]; then
+        ((lastlen += $#host))
+    fi
     if [[ "$1" =~ '\n' ]] || ((lastlen >= COLUMNS - 21)); then
         print -P ${(l:COLUMNS-19:)}'%F{238}%D{%Y-%m-%d %H:%M:%S}%f'
     else
