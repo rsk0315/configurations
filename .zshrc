@@ -71,6 +71,9 @@ PS1+=$'\n'
 PS1+='%F{45}%~/%f'  # current directory
 PS1+='$(__git_ps1 " %%F{168}(on %s)%%f")'  # git branch
 PS1+=$'\n'
+if [[ $(print -P %m) =~ ^[0-9a-f]*$ ]]; then
+    PS1+='%F{244}%m%f'
+fi
 PS1+='%# '  # prompt character
 
 ### Paths ###
