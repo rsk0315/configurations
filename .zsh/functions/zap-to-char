@@ -1,0 +1,88 @@
+# -*- mode: sh; sh-shell: zsh -*-
+#autoload
+
+emulate -L zsh
+
+local -i count=${NUMERIC:-1}
+local PROMPT=''
+if ((count == 1)); then
+    PROMPT='Zap to char:'
+elif ((count >= 0)); then
+    PROMPT="Zap to char ($count):"
+elif ((count == -1)); then
+    PROMPT='Zap to char backward:'
+elif ((count < -1)); then
+    PROMPT="Zap to char backward ($((-count))):"
+fi
+
+zle -R "$PROMPT "
+zle .read-command
+
+local find_nth() {
+    local s="$1"
+    local c="$2"
+    local -i k="$3"
+    if ((k == 0)); then
+        echo 0
+        return
+    fi
+    for ((i = 1; i <= $#s; ++i)); do
+        if [[ "${s[i]}" == "$c" ]]; then
+            if ((--k == 0)); then
+                echo $i
+                return
+            fi
+        fi
+    done
+    echo -1
+}
+
+local rfind_nth() {
+    local s="$1"
+    local c="$2"
+    local -i k="$3"
+    if ((k == 0)); then
+        echo (($#s))
+        return
+    fi
+    ((k = -k))
+    for ((i = $#s; i >= 1; --i)); do
+        if [[ "${s[i]}" == "$c" ]]; then
+            if ((--k == 0)); then
+                echo $((i - 1))
+                return
+            fi
+        fi
+    done
+    echo -1
+}
+
+case $REPLY in
+    (self-insert)
+        if ((count > 0)); then
+            local -i i=$(find_nth "$RBUFFER" "$KEYS" "$count")
+            if ((i == -1)); then
+                zle -R '' "$PROMPT Search failed: \"$KEYS\""
+                zle .beep
+            else
+                zle -R '' "$PROMPT $KEYS"
+                RBUFFER="${RBUFFER:$i}"
+            fi
+        elif ((NUMERIC < 0)); then
+            local -i i=$(rfind_nth "$LBUFFER" "$KEYS" "$count")
+            if ((i == -1)); then
+                zle -R '' "$PROMPT Search failed: \"$KEYS\""
+                zle .beep
+            else
+                zle -R '' "$PROMPT $KEYS"
+                LBUFFER="${LBUFFER::$i}"
+            fi
+        else
+            # if NUMERIC == 0, then we do nothing (no beep)
+            zle -R '' "$PROMPT $KEYS"
+        fi
+        ;;
+    (*)
+        zle $REPLY
+        ;;
+esac

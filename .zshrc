@@ -208,6 +208,9 @@ zle -N find-file && bindkey '^X^F' find-file
 autoload -U find-file-read-only
 zle -N find-file-read-only && bindkey '^X^R' find-file-read-only
 
+autoload -U zap-to-char
+zle -N zap-to-char && bindkey '^[z' zap-to-char
+
 
 ## Highlightings ##
 
