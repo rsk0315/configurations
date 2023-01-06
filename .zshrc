@@ -211,6 +211,9 @@ zle -N find-file-read-only && bindkey '^X^R' find-file-read-only
 autoload -U zap-to-char
 zle -N zap-to-char && bindkey '^[z' zap-to-char
 
+autoload -U color-picker
+zle -N color-picker && bindkey '^Xc' color-picker
+
 
 ## Highlightings ##
 

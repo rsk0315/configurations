@@ -1,0 +1,324 @@
+# -*- mode: sh; sh-shell: zsh -*-
+#autoload
+
+emulate -L zsh
+
+local pretext="$PREDISPLAY$LBUFFER$RBUFFER$POSTDISPLAY"$'\n'
+
+local save_lbuffer=$LBUFFER
+local save_rbuffer=$RBUFFER
+local save_predisplay=$PREDISPLAY
+local save_postdisplay=$POSTDISPLAY
+local -a save_region_highlight
+save_region_highlight=("${region_highlight[@]}")
+
+local seq
+
+local function color_rgb() {
+    red=$1
+    green=$2
+    blue=$3
+    ((red < 0)) && ((red = 0))
+    ((red > 5)) && ((red = 5))
+    ((green < 0)) && ((green = 0))
+    ((green > 5)) && ((green = 5))
+    ((blue < 0)) && ((blue = 0))
+    ((blue > 5)) && ((blue = 5))
+
+    echo $((16 + (red * 6 + green) * 6 + blue))
+}
+
+
+local red=0
+local green=0
+local blue=0
+local gray=0
+local palette=0
+
+local seq=_
+
+# Color-picker: \x1b[38;5;78m
+# 
+# red:   (R) __ __ __ __ __ __ (r)
+#               ^^            
+#
+# green: (G) __ __ __ __ __ __ (g)
+#                        ^^   
+#
+# blue:  (B) __ __ __ __ __ __ (b)
+#                  ^^         
+
+local prompt_r='red:   (R) __ __ __ __ __ __ (r)'
+local prompt_g='green: (G) __ __ __ __ __ __ (g)'
+local prompt_b='blue:  (B) __ __ __ __ __ __ (b)'
+local prompt_e='                            '
+local mode_216='(c) grayscale, (C) palette'
+
+local prompt_k='gray:  (h) _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (l)'
+local prompt_ek='                                                         '
+local mode_gray='(c) palette, (C) 216-color'
+
+local prompt_p1='palette: (h) __ __ __ __ __ __ __ __ (l)'
+local prompt_ep='                                    '
+local prompt_p2='         (h) __ __ __ __ __ __ __ __ (l)'
+local mode_palette='(c) 216-color, (C) grayscale'
+
+local mode=216
+
+{
+    local lb rb
+    LBUFFER=
+    RBUFFER=
+    PREDISPLAY="${pretext}Color-picker: "
+    POSTDISPLAY=
+    region_highlight=("P${(m)#pretext} ${(m)#PREDISPLAY} bold")
+
+    LBUFFER="\\x1b[38;5;16m"
+    local ll=${#LBUFFER}
+    region_highlight=(
+        "P${(m)#pretext} ${(m)#PREDISPLAY} bold"
+        "$((ll+13)) $((ll+15)) bg=$(color_rgb 0 0 0)"
+        "$((ll+16)) $((ll+18)) bg=$(color_rgb 1 0 0)"
+        "$((ll+19)) $((ll+21)) bg=$(color_rgb 2 0 0)"
+        "$((ll+22)) $((ll+24)) bg=$(color_rgb 3 0 0)"
+        "$((ll+25)) $((ll+27)) bg=$(color_rgb 4 0 0)"
+        "$((ll+28)) $((ll+30)) bg=$(color_rgb 5 0 0)"
+        "$((ll+76)) $((ll+78)) bg=$(color_rgb 0 0 0)"
+        "$((ll+79)) $((ll+81)) bg=$(color_rgb 0 1 0)"
+        "$((ll+82)) $((ll+84)) bg=$(color_rgb 0 2 0)"
+        "$((ll+85)) $((ll+87)) bg=$(color_rgb 0 3 0)"
+        "$((ll+88)) $((ll+90)) bg=$(color_rgb 0 4 0)"
+        "$((ll+91)) $((ll+93)) bg=$(color_rgb 0 5 0)"
+        "$((ll+139)) $((ll+141)) bg=$(color_rgb 0 0 0)"
+        "$((ll+142)) $((ll+144)) bg=$(color_rgb 0 0 1)"
+        "$((ll+145)) $((ll+147)) bg=$(color_rgb 0 0 2)"
+        "$((ll+148)) $((ll+150)) bg=$(color_rgb 0 0 3)"
+        "$((ll+151)) $((ll+153)) bg=$(color_rgb 0 0 4)"
+        "$((ll+154)) $((ll+156)) bg=$(color_rgb 0 0 5)"
+    )
+    RBUFFER=$'\n\n'
+    local ir=$((11 + 3 * red))
+    local ig=$((11 + 3 * green))
+    local ib=$((11 + 3 * blue))
+    RBUFFER+="${prompt_r}"$'\n'"${prompt_e:0:(ir)}^^${prompt_e:(ir+2)}"$'\n\n'
+    RBUFFER+="${prompt_g}"$'\n'"${prompt_e:0:(ig)}^^${prompt_e:(ig+2)}"$'\n\n'
+    RBUFFER+="${prompt_b}"$'\n'"${prompt_e:0:(ib)}^^${prompt_e:(ib+2)}"$'\n\n'
+    RBUFFER+="${mode_216}"
+
+    while zle -R && zle .read-command; do
+        case $REPLY in
+            (self-insert)
+                case $mode in
+                    (216)
+                        case $KEYS in
+                            (r)
+                                ((red < 5)) && ((red += 1))
+                                ;;
+                            (R)
+                                ((red > 0)) && ((red -= 1))
+                                ;;
+                            (g)
+                                ((green < 5)) && ((green += 1))
+                                ;;
+                            (G)
+                                ((green > 0)) && ((green -= 1))
+                                ;;
+                            (b)
+                                ((blue < 5)) && ((blue += 1))
+                                ;;
+                            (B)
+                                ((blue > 0)) && ((blue -= 1))
+                                ;;
+                            (c)
+                                mode=gray
+                                ;;
+                            (C)
+                                mode=palette
+                                ;;
+                        esac
+                        ;;
+                    (gray)
+                        case $KEYS in
+                            (\< | h)
+                                ((gray > 0)) && ((gray -= 1))
+                                ;;
+                            (H)
+                                ((gray -= 4))
+                                ((gray < 0)) && ((gray = 0))
+                                ;;
+                            (\> | l)
+                                ((gray < 23)) && ((gray += 1))
+                                ;;
+                            (L)
+                                ((gray += 4))
+                                ((gray > 23)) && ((gray = 23))
+                                ;;
+                            (c)
+                                mode=palette
+                                ;;
+                            (C)
+                                mode=216
+                                ;;
+                        esac
+                        ;;
+                    (palette)
+                        case $KEYS in
+                            (' ')
+                                ((palette ^= 8))
+                                ;;
+                            (\< | h)
+                                ((palette % 8 > 0)) && ((palette -= 1))
+                                ;;
+                            (\> | l)
+                                ((palette % 8 < 7)) && ((palette += 1))
+                                ;;
+                            (\^ | k)
+                                ((palette &= 7))
+                                ;;
+                            (v | j)
+                                ((palette |= 8))
+                                ;;
+                            (c)
+                                mode=216
+                                ;;
+                            (C)
+                                mode=gray
+                                ;;
+                        esac
+                esac
+                ;;
+            (abort | interrupt-line)
+                seq=
+                return 1
+                ;;
+            (accept-*)
+                break
+                ;;
+            (*)
+                zle .beep
+                ;;
+        esac
+
+        case $mode in
+            (216)
+                color=$(color_rgb $red $green $blue)
+                seq="\\x1b[38;5;${color}m"
+                LBUFFER=$seq
+
+                local ll=${#LBUFFER}
+                region_highlight=(
+                    "P${(m)#pretext} ${(m)#PREDISPLAY} bold"
+                    "$((ll+13)) $((ll+15)) bg=$(color_rgb 0 $green $blue)"
+                    "$((ll+16)) $((ll+18)) bg=$(color_rgb 1 $green $blue)"
+                    "$((ll+19)) $((ll+21)) bg=$(color_rgb 2 $green $blue)"
+                    "$((ll+22)) $((ll+24)) bg=$(color_rgb 3 $green $blue)"
+                    "$((ll+25)) $((ll+27)) bg=$(color_rgb 4 $green $blue)"
+                    "$((ll+28)) $((ll+30)) bg=$(color_rgb 5 $green $blue)"
+                    "$((ll+76)) $((ll+78)) bg=$(color_rgb $red 0 $blue)"
+                    "$((ll+79)) $((ll+81)) bg=$(color_rgb $red 1 $blue)"
+                    "$((ll+82)) $((ll+84)) bg=$(color_rgb $red 2 $blue)"
+                    "$((ll+85)) $((ll+87)) bg=$(color_rgb $red 3 $blue)"
+                    "$((ll+88)) $((ll+90)) bg=$(color_rgb $red 4 $blue)"
+                    "$((ll+91)) $((ll+93)) bg=$(color_rgb $red 5 $blue)"
+                    "$((ll+139)) $((ll+141)) bg=$(color_rgb $red $green 0)"
+                    "$((ll+142)) $((ll+144)) bg=$(color_rgb $red $green 1)"
+                    "$((ll+145)) $((ll+147)) bg=$(color_rgb $red $green 2)"
+                    "$((ll+148)) $((ll+150)) bg=$(color_rgb $red $green 3)"
+                    "$((ll+151)) $((ll+153)) bg=$(color_rgb $red $green 4)"
+                    "$((ll+154)) $((ll+156)) bg=$(color_rgb $red $green 5)"
+                )
+                RBUFFER=$'\n\n'
+                local ir=$((11 + 3 * red))
+                local ig=$((11 + 3 * green))
+                local ib=$((11 + 3 * blue))
+                RBUFFER+="${prompt_r}"$'\n'"${prompt_e:0:(ir)}^^${prompt_e:(ir+2)}"$'\n\n'
+                RBUFFER+="${prompt_g}"$'\n'"${prompt_e:0:(ig)}^^${prompt_e:(ig+2)}"$'\n\n'
+                RBUFFER+="${prompt_b}"$'\n'"${prompt_e:0:(ib)}^^${prompt_e:(ib+2)}"$'\n\n'
+                RBUFFER+="${mode_216}"
+                ;;
+            (gray)
+                color=$((232 + gray))
+                seq="\\x1b[38;5;${color}m"
+                LBUFFER=$seq
+
+                local ll=${#LBUFFER}
+                # seq 24 | awk '$0="\"$((ll+"11+2*$1")) $((ll+"12+2*$1")) bg="231+$1"\""'
+                region_highlight=(
+                    "P${(m)#pretext} ${(m)#PREDISPLAY} bold"
+                    "$((ll+13)) $((ll+14)) bg=232"
+                    "$((ll+15)) $((ll+16)) bg=233"
+                    "$((ll+17)) $((ll+18)) bg=234"
+                    "$((ll+19)) $((ll+20)) bg=235"
+                    "$((ll+21)) $((ll+22)) bg=236"
+                    "$((ll+23)) $((ll+24)) bg=237"
+                    "$((ll+25)) $((ll+26)) bg=238"
+                    "$((ll+27)) $((ll+28)) bg=239"
+                    "$((ll+29)) $((ll+30)) bg=240"
+                    "$((ll+31)) $((ll+32)) bg=241"
+                    "$((ll+33)) $((ll+34)) bg=242"
+                    "$((ll+35)) $((ll+36)) bg=243"
+                    "$((ll+37)) $((ll+38)) bg=244"
+                    "$((ll+39)) $((ll+40)) bg=245"
+                    "$((ll+41)) $((ll+42)) bg=246"
+                    "$((ll+43)) $((ll+44)) bg=247"
+                    "$((ll+45)) $((ll+46)) bg=248"
+                    "$((ll+47)) $((ll+48)) bg=249"
+                    "$((ll+49)) $((ll+50)) bg=250"
+                    "$((ll+51)) $((ll+52)) bg=251"
+                    "$((ll+53)) $((ll+54)) bg=252"
+                    "$((ll+55)) $((ll+56)) bg=253"
+                    "$((ll+57)) $((ll+58)) bg=254"
+                    "$((ll+59)) $((ll+60)) bg=255"
+                )
+                RBUFFER=$'\n\n'
+                local ik=$((11 + 2 * gray))
+                RBUFFER+="${prompt_k}"$'\n'"${prompt_ek:0:(ik)}^${prompt_ek:(ik+1)}"$'\n\n'
+                RBUFFER+="${mode_gray}"
+                ;;
+            (palette)
+                color=$palette
+                seq="\\x1b[38;5;${color}m"
+                LBUFFER=$seq
+
+                local ll=${#LBUFFER}
+                region_highlight=(
+                    "P${(m)#pretext} ${(m)#PREDISPLAY} bold"
+                    "$((ll+15)) $((ll+17)) bg=0"
+                    "$((ll+18)) $((ll+20)) bg=1"
+                    "$((ll+21)) $((ll+23)) bg=2"
+                    "$((ll+24)) $((ll+26)) bg=3"
+                    "$((ll+27)) $((ll+29)) bg=4"
+                    "$((ll+30)) $((ll+32)) bg=5"
+                    "$((ll+33)) $((ll+35)) bg=6"
+                    "$((ll+36)) $((ll+38)) bg=7"
+                    "$((ll+93)) $((ll+95)) bg=8"
+                    "$((ll+96)) $((ll+98)) bg=9"
+                    "$((ll+99)) $((ll+101)) bg=10"
+                    "$((ll+102)) $((ll+104)) bg=11"
+                    "$((ll+105)) $((ll+107)) bg=12"
+                    "$((ll+108)) $((ll+110)) bg=13"
+                    "$((ll+111)) $((ll+113)) bg=14"
+                    "$((ll+114)) $((ll+116)) bg=15"
+                )
+                RBUFFER=$'\n\n'
+                local ip=$((13 + 3 * (palette % 8)))
+                local cursor='^^'
+                ((palette >= 8)) && cursor='vv'
+                RBUFFER+="${prompt_p1}"$'\n'"${prompt_ep:0:(ip)}$cursor${prompt_ep:(ip+2)}"$'\n'
+                RBUFFER+="${prompt_p2}"$'\n\n'
+                RBUFFER+="${mode_palette}"
+                ;;
+        esac
+        # RBUFFER+="keys: '$KEYS'"
+    done
+} always {
+    LBUFFER=$save_lbuffer
+    RBUFFER=$save_rbuffer
+    PREDISPLAY=$save_predisplay
+    POSTDISPLAY=$save_postdisplay
+    region_highlight=("${save_region_highlight[@]}")
+    zle -R
+    if [[ -n "$seq" ]]; then
+        LBUFFER="${LBUFFER}\$'${seq}'"
+    fi
+}
