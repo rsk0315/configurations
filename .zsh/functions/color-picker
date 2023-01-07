@@ -48,19 +48,19 @@ local seq=_
 # blue:  (B) __ __ __ __ __ __ (b)
 #                  ^^         
 
-local prompt_r='red:   (R) __ __ __ __ __ __ (r)'
-local prompt_g='green: (G) __ __ __ __ __ __ (g)'
-local prompt_b='blue:  (B) __ __ __ __ __ __ (b)'
-local prompt_e='                            '
+local prompt_r="red:   (R) ${(r:17::__ :)} (r)"
+local prompt_g="green: (G) ${(r:17::__ :)} (g)"
+local prompt_b="blue:  (B) ${(r:17::__ :)} (b)"
+local prompt_e="${(r:28:)}"
 local mode_216='(c) grayscale, (C) palette'
 
-local prompt_k='gray:  (h) _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (l)'
-local prompt_ek='                                                         '
+local prompt_k="grayscale: (h) ${(r:47::_ :)} (l)"
+local prompt_ek="${(r:61:)}"
 local mode_gray='(c) palette, (C) 216-color'
 
-local prompt_p1='palette: (h) __ __ __ __ __ __ __ __ (l)'
-local prompt_ep='                                    '
-local prompt_p2='         (h) __ __ __ __ __ __ __ __ (l)'
+local prompt_p1="palette: (h) ${(r:23::__ :)} (l)"
+local prompt_ep="${(r:36:)}"
+local prompt_p2="         (h) ${(r:23::__ :)} (l)"
 local mode_palette='(c) 216-color, (C) grayscale'
 
 local mode=216
@@ -245,33 +245,33 @@ local mode=216
                 # seq 24 | awk '$0="\"$((ll+"11+2*$1")) $((ll+"12+2*$1")) bg="231+$1"\""'
                 region_highlight=(
                     "P${(m)#pretext} ${(m)#PREDISPLAY} bold"
-                    "$((ll+13)) $((ll+14)) bg=232"
-                    "$((ll+15)) $((ll+16)) bg=233"
-                    "$((ll+17)) $((ll+18)) bg=234"
-                    "$((ll+19)) $((ll+20)) bg=235"
-                    "$((ll+21)) $((ll+22)) bg=236"
-                    "$((ll+23)) $((ll+24)) bg=237"
-                    "$((ll+25)) $((ll+26)) bg=238"
-                    "$((ll+27)) $((ll+28)) bg=239"
-                    "$((ll+29)) $((ll+30)) bg=240"
-                    "$((ll+31)) $((ll+32)) bg=241"
-                    "$((ll+33)) $((ll+34)) bg=242"
-                    "$((ll+35)) $((ll+36)) bg=243"
-                    "$((ll+37)) $((ll+38)) bg=244"
-                    "$((ll+39)) $((ll+40)) bg=245"
-                    "$((ll+41)) $((ll+42)) bg=246"
-                    "$((ll+43)) $((ll+44)) bg=247"
-                    "$((ll+45)) $((ll+46)) bg=248"
-                    "$((ll+47)) $((ll+48)) bg=249"
-                    "$((ll+49)) $((ll+50)) bg=250"
-                    "$((ll+51)) $((ll+52)) bg=251"
-                    "$((ll+53)) $((ll+54)) bg=252"
-                    "$((ll+55)) $((ll+56)) bg=253"
-                    "$((ll+57)) $((ll+58)) bg=254"
-                    "$((ll+59)) $((ll+60)) bg=255"
+                    "$((ll+17)) $((ll+18)) bg=232"
+                    "$((ll+19)) $((ll+20)) bg=233"
+                    "$((ll+21)) $((ll+22)) bg=234"
+                    "$((ll+23)) $((ll+24)) bg=235"
+                    "$((ll+25)) $((ll+26)) bg=236"
+                    "$((ll+27)) $((ll+28)) bg=237"
+                    "$((ll+29)) $((ll+30)) bg=238"
+                    "$((ll+31)) $((ll+32)) bg=239"
+                    "$((ll+33)) $((ll+34)) bg=240"
+                    "$((ll+35)) $((ll+36)) bg=241"
+                    "$((ll+37)) $((ll+38)) bg=242"
+                    "$((ll+39)) $((ll+40)) bg=243"
+                    "$((ll+41)) $((ll+42)) bg=244"
+                    "$((ll+43)) $((ll+44)) bg=245"
+                    "$((ll+45)) $((ll+46)) bg=246"
+                    "$((ll+47)) $((ll+48)) bg=247"
+                    "$((ll+49)) $((ll+50)) bg=248"
+                    "$((ll+51)) $((ll+52)) bg=249"
+                    "$((ll+53)) $((ll+54)) bg=250"
+                    "$((ll+55)) $((ll+56)) bg=251"
+                    "$((ll+57)) $((ll+58)) bg=252"
+                    "$((ll+59)) $((ll+60)) bg=253"
+                    "$((ll+61)) $((ll+62)) bg=254"
+                    "$((ll+63)) $((ll+64)) bg=255"
                 )
                 RBUFFER=$'\n\n'
-                local ik=$((11 + 2 * gray))
+                local ik=$((15 + 2 * gray))
                 RBUFFER+="${prompt_k}"$'\n'"${prompt_ek:0:(ik)}^${prompt_ek:(ik+1)}"$'\n\n'
                 RBUFFER+="${mode_gray}"
                 ;;
@@ -302,10 +302,15 @@ local mode=216
                 )
                 RBUFFER=$'\n\n'
                 local ip=$((13 + 3 * (palette % 8)))
-                local cursor='^^'
-                ((palette >= 8)) && cursor='vv'
-                RBUFFER+="${prompt_p1}"$'\n'"${prompt_ep:0:(ip)}$cursor${prompt_ep:(ip+2)}"$'\n'
-                RBUFFER+="${prompt_p2}"$'\n\n'
+                if ((palette < 8)); then
+                    RBUFFER+="${prompt_p1}"$'\n'
+                    RBUFFER+="${prompt_ep:0:(ip)}^^${prompt_ep:(ip+2)}"$'\n'
+                    RBUFFER+="${prompt_p2:s/(h)/( )/:s/(l)/(j)/}"$'\n\n'
+                else
+                    RBUFFER+="${prompt_p1:s/(h)/( )/:s/(l)/(k)/}"$'\n'
+                    RBUFFER+="${prompt_ep:0:(ip)}vv${prompt_ep:(ip+2)}"$'\n'
+                    RBUFFER+="${prompt_p2}"$'\n\n'
+                fi
                 RBUFFER+="${mode_palette}"
                 ;;
         esac
