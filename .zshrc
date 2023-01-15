@@ -127,6 +127,27 @@ preexec() {
     stty intr '^c'
 }
 
+update_terminal_cwd() {
+    # See /etc/zshrc_Apple_Terminal
+    local url_path=''
+    {
+	local i ch hexch LC_CTYPE=C LC_COLLATE=C LC_ALL= LANG=
+	for ((i = 1; i <= ${#PWD}; ++i)); do
+	    ch="$PWD[i]"
+            # suppress error messages like
+            # > update_terminal_cwd:13: pcre_exec() error [-10]
+            # which appears when $PWD contains non-ASCII characters.
+	    if [[ "$ch" =~ [/._~A-Za-z0-9-] ]] 2> /dev/null; then
+		url_path+="$ch"
+	    else
+		printf -v hexch "%02X" "'$ch"
+		url_path+="%$hexch"
+	    fi
+	done
+    }
+    printf '\e]7;%s\a' "file://$HOST$url_path"
+}
+
 TRAPINT() {
     if [[ "$state" != 'executing' ]]; then
         print -P '%B%S^C%s%b'
