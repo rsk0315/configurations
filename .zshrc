@@ -255,6 +255,8 @@ alias j='jobs'
 alias ll='exa -l --sort=Name --time-style=long-iso'
 alias lll='exa -l --sort=Name --time-style=long-iso --tree'
 alias delta='delta --paging never'
+alias fd='fd -HI'
+alias rg='rg -. --no-ignore'
 
 alias scriptq='script -q -- /dev/null'
 
