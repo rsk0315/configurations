@@ -269,8 +269,6 @@ alias crc='RUSTFLAGS="-C instrument-coverage" cargo run'
 alias ct='cargo test'
 alias ctr='cargo test --release'
 
-alias g-s='git status'
-
 
 ## Variables ##
 
