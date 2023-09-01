@@ -105,7 +105,7 @@ preexec() {
 
     print -Pn '%f%k%b%s%u'
 
-    ts='%F{238}%D{%Y-%m-%d %H:%M:%S}%f'
+    ts='%F{238}# %D{%Y-%m-%d %H:%M:%S}%f'
 
     # `if>` や `for>` のプロンプトの有無の判定が不可能なので、複数行のときは諦める。
     # PS1 の最後の行の文字数の問題もあるが、`%# ` で決め打ちにしちゃう。
@@ -116,11 +116,11 @@ preexec() {
     if [[ $host =~ ^[0-9a-f]*$ ]]; then
         ((lastlen += $#host))
     fi
-    if [[ "$1" =~ '\n' ]] || ((lastlen >= COLUMNS - 21)); then
-        print -P ${(l:COLUMNS-19:)}'%F{238}%D{%Y-%m-%d %H:%M:%S}%f'
+    if [[ "$1" =~ '\n' ]] || ((lastlen >= COLUMNS - 23)); then
+        print -P "${(l:COLUMNS-21:)}$ts"
     else
         csi=$'\x1b['
-        print -P "${csi}1A${csi}${COLUMNS}C${csi}18D${ts}"
+        print -P "${csi}1A${csi}${COLUMNS}C${csi}20D${ts}"
     fi
 
     state='executing'
