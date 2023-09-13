@@ -235,6 +235,15 @@ zle -N zap-to-char && bindkey '^[z' zap-to-char
 autoload -U color-picker
 zle -N color-picker && bindkey '^Xc' color-picker
 
+autoload -U cut-to-pasteboard
+zle -N cut-to-pasteboard && bindkey '^X^W' cut-to-pasteboard
+
+autoload -U copy-to-pasteboard
+zle -N copy-to-pasteboard && bindkey '^X^[w' copy-to-pasteboard
+
+autoload -U paste-from-pasteboard
+zle -N paste-from-pasteboard && bindkey '^X^Y' paste-from-pasteboard
+
 
 ## Highlightings ##
 

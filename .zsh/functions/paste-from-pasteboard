@@ -1,0 +1,17 @@
+# -*- mode: sh; sh-shell: zsh -*-
+#autoload
+
+emulate -L zsh
+
+local a=$(pbpaste) # removes trailing newlines
+LBUFFER+=$a
+
+local -i len=10
+local b=
+if (($#a <= 2 * len)); then
+    b="$a"
+else
+    b="${a::(len)}...${a:(-len)}"
+fi
+
+zle -R '' "pasted from the pasteboard: '$b'."

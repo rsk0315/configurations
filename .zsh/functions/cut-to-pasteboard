@@ -1,0 +1,33 @@
+# -*- mode: sh; sh-shell: zsh -*-
+#autoload
+
+emulate -L zsh
+
+local a=
+if ((MARK < CURSOR)); then
+    a=${BUFFER:(MARK):(CURSOR - MARK)}
+    LBUFFER=${LBUFFER::(MARK)}
+    MARK=CURSOR
+elif ((CURSOR < MARK)); then
+    a=${BUFFER:(CURSOR):(MARK - CURSOR)}
+    RBUFFER=${RBUFFER:(MARK - CURSOR)}
+    MARK=CURSOR
+else
+    # clear the pasteboard
+fi
+
+local -i len=10
+local b=
+if (($#a <= 2 * len)); then
+    b="$a"
+else
+    b="${a::(len)}...${a:(-len)}"
+fi
+
+printf %s "$a" | pbcopy
+
+if [[ -z "$a" ]]; then
+    zle -R '' 'clear the pasteboard.'
+else
+    zle -R '' "copied to the pasteboard: '$b'."
+fi
