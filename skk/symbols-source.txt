@@ -1,0 +1,9 @@
+'( /‘/
+') /’/
+"( /“/
+") /”/
+modifiers /⌃⌥⇧⌘/
+ctrl /⌃/
+option /⌥/
+shift /⇧/
+cmd /⌘/
