@@ -1,0 +1,11 @@
+;; okuri-ari entries.
+;; okuri-nasi entries.
+"( /“/
+") /”/
+'( /‘/
+') /’/
+cmd /⌘/
+ctrl /⌃/
+modifiers /⌃⌥⇧⌘/
+option /⌥/
+shift /⇧/

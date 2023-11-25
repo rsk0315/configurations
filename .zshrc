@@ -168,7 +168,7 @@ autoload -U visualize-characters
 
 zstyle ':completion:*' show-ambiguity '1;32'
 
-zstyle ':completion:*' matcher-list 'r:|[._-]=** r:|/=* r:|=*'
+zstyle ':completion:*' matcher-list 'r:|[._-]=** r:|/=* r:|=* r:|[[:upper:]]=*'
 autoload -Uz compinit
 compinit
 
