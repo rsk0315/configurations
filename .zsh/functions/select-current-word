@@ -4,17 +4,17 @@
 emulate -L zsh
 
 {
-    cur=$CURSOR
+    local cur=$CURSOR
     zle emacs-backward-word
-    start1=$CURSOR
+    local start1=$CURSOR
     zle emacs-forward-word
-    end1=$CURSOR
+    local end1=$CURSOR
 
     CURSOR=$cur
     zle emacs-forward-word
-    end2=$CURSOR
+    local end2=$CURSOR
     zle emacs-backward-word
-    start2=$CURSOR
+    local start2=$CURSOR
 
     if ((start1 <= cur && cur <= end1)); then
         MARK=$start1
