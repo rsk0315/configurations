@@ -249,6 +249,9 @@ zle -N copy-to-pasteboard && bindkey '^X^[w' copy-to-pasteboard
 autoload -U paste-from-pasteboard
 zle -N paste-from-pasteboard && bindkey '^X^Y' paste-from-pasteboard
 
+autoload -U select-current-word
+zle -N select-current-word && bindkey '^Xw' select-current-word
+
 
 ## Highlightings ##
 

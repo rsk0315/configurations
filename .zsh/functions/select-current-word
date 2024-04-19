@@ -1,0 +1,31 @@
+# -*- mode: sh; sh-shell: zsh -*-
+#autoload
+
+emulate -L zsh
+
+{
+    cur=$CURSOR
+    zle emacs-backward-word
+    start1=$CURSOR
+    zle emacs-forward-word
+    end1=$CURSOR
+
+    CURSOR=$cur
+    zle emacs-forward-word
+    end2=$CURSOR
+    zle emacs-backward-word
+    start2=$CURSOR
+
+    if ((start1 <= cur && cur <= end1)); then
+        MARK=$start1
+        CURSOR=$end1
+        REGION_ACTIVE=1
+    elif ((start2 <= cur && cur <= end2)); then
+        MARK=$start2
+        CURSOR=$end2
+        REGION_ACTIVE=1
+    else
+        CURSOR=$cur
+        false
+    fi
+}
