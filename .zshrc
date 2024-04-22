@@ -252,6 +252,9 @@ zle -N paste-from-pasteboard && bindkey '^X^Y' paste-from-pasteboard
 autoload -U select-current-word
 zle -N select-current-word && bindkey '^Xw' select-current-word
 
+autoload -U toggle-case
+zle -N toggle-case && bindkey '^Xt' toggle-case
+
 
 ## Highlightings ##
 

@@ -1,0 +1,62 @@
+# -*- mode: sh; sh-shell: zsh -*-
+#autoload
+
+emulate -L zsh
+
+function to-lower-snake-case() {
+    echo ${1//./_}
+}
+function to-lower-chain-case() {
+    echo ${1//./-}
+}
+function to-lower-camel-case() {
+    set -o histsubstpattern
+    set -o extendedglob
+    echo ${${(j::)${(s:.:C)1}}:s/#(#b)([A-Z])/'${(L)match[1]}'/}
+}
+function to-upper-snake-case() {
+    echo ${(U)1//./_}
+}
+function to-upper-chain-case() {
+    echo ${(U)1//./-}
+}
+function to-upper-camel-case() {
+    echo ${(j::)${(s:.:C)1}}
+}
+
+function split-any() {
+    set -o histsubstpattern
+    set -o extendedglob
+    echo ${1:gs/(#b)([a-z])([A-Z])/'${match[1]}.${(L)match[2]}'/:gs/[_-]/./:l}
+}
+
+{
+    if ((MARK < CURSOR)); then
+        local offset=$((MARK))
+        local length=$((CURSOR - MARK))
+    else
+        local offset=$((CURSOR))
+        local length=$((MARK - CURSOR))
+    fi
+    local word=${BUFFER:(offset):(length)}
+    local split=$(split-any "$word")
+    zle -R '' "split: '$split'"
+
+    local conv res
+    read -k1 conv
+    case $conv in
+        [l_] ) res=$(to-lower-snake-case "$split");;
+        - ) res=$(to-lower-chain-case "$split");;
+        c ) res=$(to-lower-camel-case "$split");;
+        [Uu] ) res=$(to-upper-snake-case "$split");;
+        = ) res=$(to-upper-chain-case "$split");;
+        C ) res=$(to-upper-camel-case "$split");;
+    esac
+    if [[ -z "$res" ]]; then
+        return 1
+    fi
+
+    BUFFER="${BUFFER:(0):(offset)}$res${BUFFER:(offset + length)}"
+    MARK=$offset
+    CURSOR=$((offset + $#res))
+}
