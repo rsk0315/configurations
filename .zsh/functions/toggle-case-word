@@ -1,0 +1,14 @@
+# -*- mode: sh; sh-shell: zsh -*-
+#autoload
+
+emulate -L zsh
+
+{
+    local save_wordchars=$WORDCHARS
+
+    WORDCHARS=_-
+    zle select-current-word && zle toggle-case
+    REGION_ACTIVE=0
+} always {
+    WORDCHARS=$save_wordchars
+}

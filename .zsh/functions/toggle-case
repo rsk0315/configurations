@@ -45,10 +45,10 @@ function split-any() {
     local conv res
     read -k1 conv
     case $conv in
-        [l_] ) res=$(to-lower-snake-case "$split");;
+        l | _ ) res=$(to-lower-snake-case "$split");;
         - ) res=$(to-lower-chain-case "$split");;
         c ) res=$(to-lower-camel-case "$split");;
-        [Uu] ) res=$(to-upper-snake-case "$split");;
+        U | u ) res=$(to-upper-snake-case "$split");;
         = ) res=$(to-upper-chain-case "$split");;
         C ) res=$(to-upper-camel-case "$split");;
     esac

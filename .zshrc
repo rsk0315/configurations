@@ -255,6 +255,9 @@ zle -N select-current-word && bindkey '^Xw' select-current-word
 autoload -U toggle-case
 zle -N toggle-case && bindkey '^Xt' toggle-case
 
+autoload -U toggle-case-word
+zle -N toggle-case-word && bindkey '^XT' toggle-case-word
+
 
 ## Highlightings ##
 
