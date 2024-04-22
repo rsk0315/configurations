@@ -9,18 +9,22 @@ emulate -L zsh
     local start1=$CURSOR
     zle emacs-forward-word
     local end1=$CURSOR
+    zle emacs-backward-word
+    local start1_re=$CURSOR
 
     CURSOR=$cur
     zle emacs-forward-word
     local end2=$CURSOR
     zle emacs-backward-word
     local start2=$CURSOR
+    zle emacs-forward-word
+    local end2_re=$CURSOR
 
-    if ((start1 <= cur && cur <= end1)); then
+    if ((start1_re == start1 && start1 <= cur && cur <= end1)); then
         MARK=$start1
         CURSOR=$end1
         REGION_ACTIVE=1
-    elif ((start2 <= cur && cur <= end2)); then
+    elif ((end2_re == end2 && start2 <= cur && cur <= end2)); then
         MARK=$start2
         CURSOR=$end2
         REGION_ACTIVE=1
