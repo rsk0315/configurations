@@ -292,6 +292,10 @@ alias crr='cargo run --release'
 alias crc='RUSTFLAGS="-C instrument-coverage" cargo run'
 alias ct='cargo test'
 alias ctr='cargo test --release'
+alias cmt='cargo miri test'
+alias cmr='cargo miri run'
+alias cmtt="MIRIFLAGS='-Zmiri-tree-borrows' cargo miri test"
+alias cmrt="MIRIFLAGS='-Zmiri-tree-borrows' cargo miri run"
 
 
 ## Variables ##
