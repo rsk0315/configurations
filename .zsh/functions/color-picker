@@ -12,8 +12,6 @@ local save_postdisplay=$POSTDISPLAY
 local -a save_region_highlight
 save_region_highlight=("${region_highlight[@]}")
 
-local seq
-
 local function color_rgb() {
     red=$1
     green=$2
@@ -35,7 +33,7 @@ local blue=0
 local gray=0
 local palette=0
 
-local seq=_
+local seq="\\x1b[38;5;$(color_rgb 0 0 0)m"
 
 # Color-picker: \x1b[38;5;78m
 # 
