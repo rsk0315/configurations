@@ -1,0 +1,21 @@
+;; Latin Letters
+A-short /Ă/
+a-short /ă/
+E-short /Ĕ/
+e-short /ĕ/
+I-short /Ĭ/
+i-short /ĭ/
+O-short /Ŏ/
+o-short /ŏ/
+U-short /Ŭ/
+u-short /ŭ/
+A-long /Ā/
+a-long /ā/
+E-long /Ē/
+e-long /ē/
+I-long /Ī/
+i-long /ī/
+U-long /Ū/
+u-long /ū/
+O-long /Ō/
+o-long /ō/
